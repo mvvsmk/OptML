@@ -5,6 +5,7 @@ set (LIBS
     ${dialect_libs}
     ${conversion_libs}
     AffineFullUnroll
+    MakeRunAble
     # MLIRNoisy
     MLIROptLib
     MLIRPass
@@ -15,9 +16,9 @@ set (LIBS
     ortools::ortools
 )
 
-add_llvm_executable(tutorial-opt tutorial-opt.cpp)
+add_llvm_executable(project-opt project-opt.cpp)
 
-llvm_update_compile_flags(tutorial-opt)
-target_link_libraries(tutorial-opt PRIVATE ${LIBS})
+llvm_update_compile_flags(project-opt)
+target_link_libraries(project-opt PRIVATE ${LIBS})
 
-mlir_check_all_link_libraries(tutorial-opt)
+mlir_check_all_link_libraries(project-opt)

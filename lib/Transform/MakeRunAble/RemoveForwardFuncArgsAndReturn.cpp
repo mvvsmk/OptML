@@ -29,14 +29,14 @@ void RemoveForwardFuncArgsAndReturn::runOnOperation() {
   mlir::OpBuilder builder(ctx);
   auto fuctionblock = &func.getBody().front();
   builder.setInsertionPointToStart(fuctionblock);
-  llvm::errs() << "\n" << func->getName() << "\n";
+  // llvm::errs() << "\n" << func->getName() << "\n";
   mlir::SmallVector<BlockArgument, 5> argsvector;
   auto args = func.getArguments();
 
   mlir::DenseMap<unsigned int, Value> argMap;
   for (auto arg : args) {
     auto memrefType = mlir::cast<MemRefType>(arg.getType());
-    llvm::errs() << "-> " << arg.getArgNumber() << " moved \n";
+    // llvm::errs() << "-> " << arg.getArgNumber() << " moved \n";
     auto allocOp = builder.create<memref::AllocOp>(arg.getLoc(), memrefType);
     argMap[arg.getArgNumber()] = allocOp;
     arg.replaceAllUsesWith(allocOp);

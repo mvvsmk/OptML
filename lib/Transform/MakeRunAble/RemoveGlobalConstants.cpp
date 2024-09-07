@@ -42,7 +42,7 @@ void RemoveGlobalConstants::runOnOperation() {
 
   for (auto global : global_constants) {
     auto memrefType = mlir::cast<MemRefType>(global.getType());
-    llvm::errs() << "->" << global.getSymName() << "\n";
+    // llvm::errs() << "->" << global.getSymName() << "\n";
     auto allocOp =
         builder.create<memref::AllocOp>(global->getLoc(), memrefType);
     globalMap[global.getSymName()] = allocOp;
@@ -56,8 +56,8 @@ void RemoveGlobalConstants::runOnOperation() {
       getGlobalOp.erase();
     }
   });
-  llvm::errs() << " Replacements done "
-               << "\n";
+  // llvm::errs() << " Replacements done "
+  //              << "\n";
   return;
 }
 

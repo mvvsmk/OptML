@@ -4,3 +4,5 @@ build*
 temp.mlir
 generate_MLIR.py
 Torch_MLIR/*
+/benchmarks/mlir_obj/*
+Onnx_models/*

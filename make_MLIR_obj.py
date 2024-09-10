@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 def convert_to_ll(source_file, 
                   output_file,
+                  project_opt_flags,
                   mlir_opt_path = os.path.abspath("./External/llvm-project/build/bin/mlir-opt"),
                   project_opt_path = os.path.abspath("./build-ninja/tools/project-opt"),
                   mlir_translate_path = os.path.abspath("./External/llvm-project/build/bin/mlir-translate")):
@@ -17,7 +18,6 @@ def convert_to_ll(source_file,
     """
     ./mlir-opt --lower-affine --expand-strided-metadata  --convert-scf-to-cf --convert-cf-to-llvm --llvm-request-c-wrappers  --convert-func-to-llvm --normalize-memrefs --memref-expand --finalize-memref-to-llvm --reconcile-unrealized-casts --llvm-legalize-for-export ../../squeezenet1_0.mlir | /home/intern24005/code/compiler_builds/mlir_test_build/bin/mlir-translate --mlir-to-llvmir > squeezenet1_0.ll
     """
-    project_opt_flags = '--rem-forward-func-args-and-return-run-mlir --rem-global-constants-run-mlir'
     mlir_flags = '--lower-affine --expand-strided-metadata  --convert-scf-to-cf --convert-math-to-llvm --convert-cf-to-llvm --llvm-request-c-wrappers  --convert-func-to-llvm --normalize-memrefs --memref-expand --finalize-memref-to-llvm --reconcile-unrealized-casts --llvm-legalize-for-export'
     command = f"{project_opt_path} {project_opt_flags} {source_file} | {mlir_opt_path} {mlir_flags} | {mlir_translate_path} --mlir-to-llvmir > {output_file}"
     print(command)
@@ -71,5 +71,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Compile MLIR files to object files')
     parser.add_argument('input_folder', type=str, help='Absolute path to the folder with MLIR files or the only MLIR file')
     parser.add_argument('output_folder', type=str, help='Absolute path to the folder where object files will be stored')
+    parser.add_argument('--mlir-flags', required=False,default="--rem-forward-func-args-and-return-run-mlir --rem-global-constants-run-mlir" ,type=str, help='Flags to be passed to mlir-opt')
     args = parser.parse_args()
-    compile_to_object_from_mlir(args.input_folder, args.output_folder)
+    compile_to_object_from_mlir(args.input_folder, args.output_folder,args.mlir_flags)

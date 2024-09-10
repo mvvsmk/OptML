@@ -39,29 +39,6 @@ target_compile_definitions(run_bench_GB_Modified PRIVATE -DPAPI_INST__ -DHUMAN_R
 target_sources(run_bench_GB_Modified PRIVATE "${CMAKE_SOURCE_DIR}/benchmarks/mlir_obj/modified.o")
 target_link_libraries(run_bench_GB_Modified benchmark::benchmark libmlir_c_runner_utils)
 
-
-# # Based on the chosen model, link the corresponding object file
-# if(ML_MODEL STREQUAL "Alexnet")
-#     target_sources(run_bench_GB PRIVATE "${CMAKE_SOURCE_DIR}/benchmarks/mlir_obj/alexnet.o")
-    
-    
-#     elseif(ML_MODEL STREQUAL "Resnet")
-#     target_sources(run_bench_GB PRIVATE "${CMAKE_SOURCE_DIR}/benchmarks/mlir_obj/resnet152.o")
-
-    
-#     elseif(ML_MODEL STREQUAL "VGG")
-#     target_sources(run_bench_GB PRIVATE "${CMAKE_SOURCE_DIR}/benchmarks/mlir_obj/vgg11.o")
-    
-    
-#     elseif(ML_MODEL STREQUAL "Modified")
-#     target_sources(run_bench_GB PRIVATE "${CMAKE_SOURCE_DIR}/benchmarks/mlir_obj/modified.o")
-    
-#     else()
-
-
-# endif()
-
-
 # set_target_properties(run_bench_GB PROPERTIES INTERPROCEDURAL_OPTIMIZATION FALSE)
 
 # Optionally, print the selected model during the build

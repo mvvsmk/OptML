@@ -26,6 +26,21 @@ include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/External/llvm-project)
 include_directories(${PROJECT_BINARY_DIR})
 
+add_custom_command(
+    OUTPUT "${CMAKE_SOURCE_DIR}/benchmarks/mlir_obj/alexnet.o"
+    OUTPUT "${CMAKE_SOURCE_DIR}/benchmarks/mlir_obj/resnet152.o"
+    OUTPUT "${CMAKE_SOURCE_DIR}/benchmarks/mlir_obj/vgg11.o"
+    OUTPUT "${CMAKE_SOURCE_DIR}/benchmarks/mlir_obj/modified.o"
+    COMMAND ${CMAKE_COMMAND} -E echo "Compiling oracle object files"
+    ${CMAKE_COMMAND} -E env bash ${CMAKE_SOURCE_DIR}/build_obj.sh
+    DEPENDS ${CMAKE_SOURCE_DIR}/alexnet.mlir
+    COMMENT "Compiling oracle object files"
+)
+add_custom_target(build_alexnet_obj ALL
+    DEPENDS ${CMAKE_SOURCE_DIR}/benchmarks/mlir_obj/alexnet.o
+)
+
+
 message(STATUS "Fetching or-tools...")
 include(FetchContent)
 FetchContent_Declare(

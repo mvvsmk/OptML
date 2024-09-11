@@ -68,5 +68,4 @@ target_sources(run_bench_Time_Modified PRIVATE "${CMAKE_SOURCE_DIR}/benchmarks/m
 target_link_libraries(run_bench_Time_Modified libmlir_c_runner_utils)
 
 
-# Optionally, print the selected model during the build
 message(STATUS "Compiled run_bench_HC_* and run_bench_Tsime_* ")

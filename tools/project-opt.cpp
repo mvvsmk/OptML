@@ -1,7 +1,7 @@
 #include "include/Transform/Affine/Affine64Unroll.h"
 #include "include/Transform/MakeRunAble/RemoveForwardFuncArgsAndReturn.h"
-#include "include/Transform/MakeRunAble/RemoveForwardFuncArgsAndReturnZeroInit.h"
 #include "include/Transform/MakeRunAble/RemoveGlobalConstants.h"
+#include "include/Transform/MakeRunAble/ZeroInitRemoveForwardFuncArgsAndReturn.h"
 #include "mlir/include/mlir/InitAllDialects.h"
 #include "mlir/include/mlir/Pass/PassManager.h"
 #include "mlir/include/mlir/Pass/PassRegistry.h"
@@ -15,8 +15,7 @@ int main(int argc, char **argv) {
   mlir::PassRegistration<mlir::project::RemoveGlobalConstants>();
   mlir::PassRegistration<mlir::project::RemoveForwardFuncArgsAndReturn>();
   mlir::PassRegistration<
-      mlir::project::RemoveForwardFuncArgsAndReturnZeroInit>();
-
+      mlir::project::ZeroInitRemoveForwardFuncArgsAndReturn>();
   return mlir::asMainReturnCode(
       mlir::MlirOptMain(argc, argv, "Pass Driver", registry));
 }

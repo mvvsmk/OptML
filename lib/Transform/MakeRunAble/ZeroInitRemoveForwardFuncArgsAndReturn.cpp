@@ -1,4 +1,4 @@
-#include "include/Transform/MakeRunAble/RemoveForwardFuncArgsAndReturnZeroInit.h"
+#include "include/Transform/MakeRunAble/ZeroInitRemoveForwardFuncArgsAndReturn.h"
 #include "mlir/Dialect/Affine/IR/AffineOps.h"
 #include "mlir/Dialect/Affine/LoopUtils.h"
 #include "mlir/Dialect/Func/IR/FuncOps.h"
@@ -23,7 +23,7 @@
 namespace mlir {
 namespace project {
 
-void RemoveForwardFuncArgsAndReturnZeroInit::runOnOperation() {
+void ZeroInitRemoveForwardFuncArgsAndReturn::runOnOperation() {
   func::FuncOp func = getOperation();
   mlir::MLIRContext *ctx = func->getContext();
   mlir::OpBuilder builder(ctx);
@@ -52,14 +52,12 @@ void RemoveForwardFuncArgsAndReturnZeroInit::runOnOperation() {
       numElements *= dim;
     }
 
-    // Fill the allocated memory with random values (simulated here)
+    // Fill the allocated memory with zeros
     for (int64_t i = 0; i < numElements; ++i) {
-      // Random value simulation: could replace with actual random number
-      // generation Use a function call to an external RNG function (if
-      // available)
-      Value randomValue = builder.create<arith::ConstantOp>(
-          builder.getUnknownLoc(), builder.getF64Type(),
-          builder.getF64FloatAttr(static_cast<double>(rand()) / RAND_MAX));
+      // Create a zero value according to the element type of the memref
+      Value zeroValue = builder.create<arith::ConstantOp>(
+          builder.getUnknownLoc(), memrefType.getElementType(),
+          builder.getZeroAttr(memrefType.getElementType()));
 
       // Calculate indices for the store operation
       SmallVector<Value, 4> indices;
@@ -69,8 +67,8 @@ void RemoveForwardFuncArgsAndReturnZeroInit::runOnOperation() {
         product *= shape[dim];
       }
 
-      // Store the random value at the calculated index
-      builder.create<memref::StoreOp>(arg.getLoc(), randomValue, allocOp,
+      // Store the zero value at the calculated index
+      builder.create<memref::StoreOp>(arg.getLoc(), zeroValue, allocOp,
                                       indices);
     }
 

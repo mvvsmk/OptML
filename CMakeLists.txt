@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20.0)
 
-project(mlir-tutorial LANGUAGES CXX C)
+project(OptML LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ standard to conform to")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -32,8 +32,11 @@ add_custom_command(
     OUTPUT "${CMAKE_SOURCE_DIR}/benchmarks/mlir_obj/vgg11.o"
     OUTPUT "${CMAKE_SOURCE_DIR}/benchmarks/mlir_obj/modified.o"
     COMMAND ${CMAKE_COMMAND} -E echo "Compiling oracle object files"
-    ${CMAKE_COMMAND} -E env bash ${CMAKE_SOURCE_DIR}/build_obj.sh
-    DEPENDS ${CMAKE_SOURCE_DIR}/alexnet.mlir
+    COMMAND ${CMAKE_COMMAND} -E env bash ${CMAKE_SOURCE_DIR}/build_obj.sh ${CMAKE_SOURCE_DIR}
+    DEPENDS ${CMAKE_SOURCE_DIR}/Torch_MLIR/pytorch/alexnet.mlir
+    DEPENDS ${CMAKE_SOURCE_DIR}/Torch_MLIR/pytorch/resnet152.mlir
+    DEPENDS ${CMAKE_SOURCE_DIR}/Torch_MLIR/pytorch/vgg11.mlir
+    DEPENDS ${CMAKE_SOURCE_DIR}/Torch_MLIR/modified/modified.mlir
     COMMENT "Compiling oracle object files"
 )
 add_custom_target(build_alexnet_obj ALL

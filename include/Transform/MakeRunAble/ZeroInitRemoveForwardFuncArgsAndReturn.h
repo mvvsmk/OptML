@@ -1,5 +1,5 @@
-#ifndef LIB_TRANSFORM_MAKE_RUN_ABLE_RFFAAR_H_
-#define LIB_TRANSFORM_MAKE_RUN_ABLE_RFFAAR_H_
+#ifndef LIB_TRANSFORM_MAKE_RUN_ABLE_ZIRFFAAR_H_
+#define LIB_TRANSFORM_MAKE_RUN_ABLE_ZIRFFAAR_H_
 
 #include "mlir/Dialect/Affine/IR/AffineOps.h"
 #include "mlir/Dialect/Func/IR/FuncOps.h"
@@ -10,8 +10,8 @@
 namespace mlir {
 namespace project {
 
-class RemoveForwardFuncArgsAndReturnZeroInit
-    : public PassWrapper<RemoveForwardFuncArgsAndReturnZeroInit,
+class ZeroInitRemoveForwardFuncArgsAndReturn
+    : public PassWrapper<ZeroInitRemoveForwardFuncArgsAndReturn,
                          OperationPass<mlir::func::FuncOp>> {
 private:
   void runOnOperation() override;
@@ -29,4 +29,4 @@ private:
 } // namespace project
 } // namespace mlir
 
-#endif // LIB_TRANSFORM_MAKE_RUN_ABLE_RFFAAR_H_
+#endif // LIB_TRANSFORM_MAKE_RUN_ABLE_ZIRFFAAR_H_

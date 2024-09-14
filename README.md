@@ -44,8 +44,8 @@ Ensure that these dependencies are installed and configured correctly before pro
 
 ### 1) Clone the Repository
 ```bash
-git clone git@github.com:mvvsmk/MLIR-playground.git
-cd MLIR-playground
+git clone https://github.com/mvvsmk/OptML.git
+cd OptML
 git submodule update --init --recursive
 ```
 
@@ -86,7 +86,9 @@ When the object file is compiled, two important passes are run:
 
 1. **`--rem-forward-func-args-and-return-run-mlir-zero-init`**:
     - This pass removes the arguments and return values of the `forward` function to make all functions uniform.
-    - You can choose between two variants: one where the arguments are zero-initialized, and another where they remain uninitialized (resulting in undefined behavior). The default behaviour is to zero init the argument (usually the picture for the model) but if you are feeling lucky and want to experiment with undefie behviour change the following in make_MLIR_obj.py :
+    - You can choose between two variants: one where the arguments are zero-initialized, and another where they remain uninitialized (resulting in undefined behavior).
+    - Uninitialized one takes less memory to compile as adding the initialization ends up creating a lot of instructions which takes up a lot of ram.
+     The default behaviour is to zero init the argument (usually the picture for the model) but if you are feeling lucky and want to experiment with undefined behviour change the following in make_MLIR_obj.py :
 ```diff
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Compile MLIR files to object files')

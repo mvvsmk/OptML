@@ -1,6 +1,7 @@
 #include "include/Transform/MakeRunAble/ZeroInitRemoveForwardFuncArgsAndReturn.h"
 #include "mlir/Dialect/Affine/IR/AffineOps.h"
 #include "mlir/Dialect/Affine/LoopUtils.h"
+#include "mlir/Dialect/Arith/IR/Arith.h"
 #include "mlir/Dialect/Func/IR/FuncOps.h"
 #include "mlir/Dialect/MemRef/IR/MemRef.h"
 #include "mlir/IR/Attributes.h"
@@ -8,17 +9,21 @@
 #include "mlir/IR/BuiltinAttributes.h"
 #include "mlir/IR/BuiltinOps.h"
 #include "mlir/IR/BuiltinTypes.h"
+#include "mlir/IR/Location.h"
 #include "mlir/IR/MLIRContext.h"
 #include "mlir/IR/PatternMatch.h"
 #include "mlir/IR/Value.h"
+#include "mlir/IR/ValueRange.h"
 #include "mlir/Support/LLVM.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
+#include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/Error.h"
 #include "llvm/Support/LogicalResult.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/IPO/Attributor.h"
+#include <cstdint>
 
 namespace mlir {
 namespace project {
@@ -34,8 +39,8 @@ void ZeroInitRemoveForwardFuncArgsAndReturn::runOnOperation() {
   mlir::DenseMap<unsigned int, Value> argMap;
 
   // Helper to create a constant index value
-  auto createConstantIndex = [&](int64_t val) -> Value {
-    return builder.create<arith::ConstantIndexOp>(builder.getUnknownLoc(), val);
+  auto createConstantIndex = [&](int64_t val, mlir::Location argloc) -> Value {
+    return builder.create<arith::ConstantIndexOp>(argloc, val);
   };
 
   for (auto arg : args) {
@@ -45,32 +50,21 @@ void ZeroInitRemoveForwardFuncArgsAndReturn::runOnOperation() {
     auto allocOp = builder.create<memref::AllocOp>(arg.getLoc(), memrefType);
     argMap[arg.getArgNumber()] = allocOp;
 
-    // Get shape and size of memref to iterate over
+    // Get shape of memref to iterate over
     auto shape = memrefType.getShape();
-    int64_t numElements = 1;
-    for (auto dim : shape) {
-      numElements *= dim;
-    }
+    unsigned rank = memrefType.getRank();
+    Value zeroVal = builder.create<arith::ConstantOp>(
+        arg.getLoc(), builder.getZeroAttr(memrefType.getElementType()));
+    auto loc = allocOp->getLoc();
 
-    // Fill the allocated memory with zeros
-    for (int64_t i = 0; i < numElements; ++i) {
-      // Create a zero value according to the element type of the memref
-      Value zeroValue = builder.create<arith::ConstantOp>(
-          builder.getUnknownLoc(), memrefType.getElementType(),
-          builder.getZeroAttr(memrefType.getElementType()));
-
-      // Calculate indices for the store operation
-      SmallVector<Value, 4> indices;
-      int64_t product = 1;
-      for (int64_t dim = shape.size() - 1; dim >= 0; --dim) {
-        indices.push_back(createConstantIndex((i / product) % shape[dim]));
-        product *= shape[dim];
-      }
-
-      // Store the zero value at the calculated index
-      builder.create<memref::StoreOp>(arg.getLoc(), zeroValue, allocOp,
-                                      indices);
-    }
+    SmallVector<int64_t, 4> lowerBounds(memrefType.getRank(), /*Value=*/0);
+    SmallVector<int64_t, 4> steps(memrefType.getRank(), /*Value=*/1);
+    affine::buildAffineLoopNest(
+        builder, loc, lowerBounds, memrefType.getShape(), steps,
+        [&](OpBuilder &nestedBuilder, Location loc, ValueRange ivs) {
+          nestedBuilder.create<affine::AffineStoreOp>(loc, zeroVal, allocOp,
+                                                      ivs);
+        });
 
     // Replace the original argument with the allocated memory
     arg.replaceAllUsesWith(allocOp);

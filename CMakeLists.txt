@@ -44,23 +44,17 @@ add_custom_target(build_alexnet_obj ALL
 )
 
 
-message(STATUS "Fetching or-tools...")
+message(STATUS "Fetching Google Benchmarks..")
 include(FetchContent)
-FetchContent_Declare(
-  or-tools
-  GIT_REPOSITORY https://github.com/google/or-tools.git
-  GIT_TAG        v9.0
-  )
-message(STATUS "Done fetching or-tools")
 set(BENCHMARK_ENABLE_TESTING NO)
 set(CMAKE_BUILD_TYPE Release) # Ensure the build type is Release
-message(STATUS "Fetching Google Benchmarks..")
 FetchContent_Declare(
   googlebenchmark
   GIT_REPOSITORY https://github.com/google/benchmark.git
   GIT_TAG origin/main
 )
-FetchContent_MakeAvailable(or-tools googlebenchmark)
+# FetchContent_MakeAvailable(or-tools googlebenchmark)
+FetchContent_MakeAvailable(googlebenchmark)
 set(BENCHMARK_ENABLE_LTO ON)  # Enable Link Time Optimization for better performance
 
 # add_subdirectory(tests)

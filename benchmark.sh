@@ -51,8 +51,11 @@ GOOGLE_BENCHMARK="${BENCHMARK_DIR}/GoogleBenchmarks/"
 HC_BENCHMARK="${BENCHMARK_DIR}/Hardware_Counters_or_Time/"
 
 echo "Compiling your optimized mlir to an object file mlir_oracle : ${ML_MODEL_MLIR} "
+echo "=========== Running your pass ${OPT_FLAG} on ${ML_MODEL_MLIR} =================="
+echo " ${PROJECT_OPT} ${OPT_FLAG} ${ML_MODEL_MLIR} -o ${MODIFIED_MLIR} "
 $PROJECT_OPT $OPT_FLAG $ML_MODEL_MLIR -o $MODIFIED_MLIR
 #make your modified mlir obj
+echo "============= Compiling Required MLIR files ${ML_MODEL_MLIR} ==================="
 $MLIR_OBJ_PY $MODIFIED_MLIR $MODIFIED_OBJ_FOLDER
 cmake --build $BUILD_DIR --target run_bench_Time_Modified
 cmake --build $BUILD_DIR --target run_bench_HC_Modified
@@ -65,26 +68,26 @@ cmake --build $BUILD_DIR --target run_bench_HC_$ML_MODEL
 case $BENCHMARK_TYPE in
     GB)
         echo "Running Google Benchmark for $ML_MODEL with flag: $OPT_FLAG"
-        echo "============= Orginal with O0 ==================="
+        echo "========================== Orginal with O0 ====================================="
         $GOOGLE_BENCHMARK/run_bench_GB_$ML_MODEL --benchmark_time_unit=s
-        echo "============= After Transformation =============="
+        echo "======================= After Transformation ==================================="
         $GOOGLE_BENCHMARK/run_bench_GB_Modified --benchmark_time_unit=s
         # Add your command to run Google Benchmark with the specified ML model and opt flag
         ;;
     PAPI)
         echo "Running PAPI Benchmark for $ML_MODEL with flag: $OPT_FLAG"
-        echo "============= Orginal with O0 ==================="
+        echo "========================== Orginal with O0 ====================================="
         $HC_BENCHMARK/run_bench_HC_$ML_MODEL PAPI_EVENT_NAME=$PAPI_EVENT_NAME
-        echo "============= After Transformation =============="
+        echo "======================= After Transformation ==================================="
         $HC_BENCHMARK/run_bench_HC_Modified PAPI_EVENT_NAME=$PAPI_EVENT_NAME
         # Add your command to run PAPI-based benchmark with the specified ML model and opt flag
         # e.g., ./run_bench_PAPI $ML_MODEL $OPT_FLAG
         ;;
     chrono)
         echo "Running Chrono-based Benchmark for $ML_MODEL with flag: $OPT_FLAG"
-        echo "============= Orginal with O0 ==================="
+        echo "========================== Orginal with O0 ====================================="
         $HC_BENCHMARK/run_bench_Time_$ML_MODEL
-        echo "============= After Transformation =============="
+        echo "======================= After Transformation ==================================="
         $HC_BENCHMARK/run_bench_Time_Modified
         # Add your command to run chrono-based benchmark with the specified ML model and opt flag
         # e.g., ./run_bench_chrono $ML_MODEL $OPT_FLAG

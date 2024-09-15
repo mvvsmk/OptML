@@ -8,7 +8,6 @@ set (LIBS
     MakeRunAble
     MLIROptLib
     MLIRPass
-    ortools::ortools
 )
 
 add_llvm_executable(project-opt project-opt.cpp)

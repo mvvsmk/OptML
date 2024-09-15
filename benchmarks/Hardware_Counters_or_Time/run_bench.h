@@ -105,7 +105,7 @@ void print_time() {
       std::chrono::duration_cast<std::chrono::nanoseconds>(timing).count();
   time_reading = time_reading_ns / 1000000000;
 #ifdef HUMAN_READABLE
-  std::cerr << "Measured Time : " << time_reading << std::endl;
+  std::cerr << "Measured Time : " << time_reading << " seconds" << std::endl;
 #endif
   std::cerr << time_reading << std::endl;
 }

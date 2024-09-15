@@ -58,7 +58,7 @@ git submodule update --init --recursive
 
 ### 3) Run a Pre-included Benchmark to Verify the Setup
 ```bash
-./benchmark GB Alexnet --affine-64-unroll
+./benchmark.sh chrono Alexnet --affine-64-unroll
 ```
 
 ## Usage Guide
@@ -76,9 +76,13 @@ To run your own benchmarks, use the command:
 ```bash
 $rootdir/benchmark.sh [benchmark_type] [ML_model] [benchmark_flag] [PAPI_event_name]
 ```
+![sample_output](https://github.com/mvvsmk/OptML/blob/main/example_output.png?raw=true)
 
 > [!WARNING]  
 > Before interpreting your benchmark results, it's important to understand how the benchmarking process works.
+> This looks like a 29% increase but what you miss, is the object file size increase from 16KB to 2.5MB. XD . This was measured on a Intel(R) Core(TM) Ultra 9 185H, in a single threaded manner, this measurement also includes array initilization to all zeros.
+
+
 
 ## Benchmarking Process
 
@@ -109,7 +113,13 @@ extern "C" void forward();
 
 When you run a pass using the `benchmark.sh` script, it generates a `Modified.mlir` file, which is then processed through the same pipeline and linked for benchmarking.
 
+All these benchmarks are run in a single threaded manner without sudo taskset -c <thread>.
+
+You can use the *.cpp and *.h files present in the `benchmarks/Hardware_Counters_or_Time` folder and add any custom parameters you want to measure.
+
 ### Files of Interest
+
+Do go through these files if you want to lean more on how the benchmarks actually compile and execute. 
 
 - **`benchmark.sh`**: Executes your pass and compares the results against the original.
 - **`make_MLIR_obj.py`**: Converts the MLIR file to an object file for benchmarking.

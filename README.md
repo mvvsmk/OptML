@@ -52,7 +52,7 @@ git submodule update --init --recursive
 ### 2) Run the Build Script
 ```bash
 ./build_llvm.sh   # Builds the LLVM submodule
-# please not while doing check-mlir build might fail but it doesn't affect the project.
+# please note while doing check-mlir build might fail but it doesn't affect the project.
 ./build_mlir.sh   # Builds the project-opt tool with out-of-tree optimizations
 ```
 
